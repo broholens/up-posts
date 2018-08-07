@@ -36,8 +36,8 @@ class DouBan:
         time.sleep(5)
         try:
             img_url = self.driver.find_element_by_id('captcha_image').get_attribute('src')
-            word = requests.post('http://39.107.86.245:5001/', data={'img_url': img_url}).text
-            word = word.replace('"', '').replace('\n', '').strip()
+            resp = requests.post('http://39.107.86.245:5001/', data={'img_url': img_url})
+            word = resp.json().get('word')
             while 1:
                 logging.info('word %s    img_url: %s', word, img_url)
                 if word:
