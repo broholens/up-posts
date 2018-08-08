@@ -4,7 +4,7 @@ from uuid import uuid4
 from itertools import count
 import fire
 import requests
-from config import posts
+from config import douban
 from utils import config_log, load_cookies, request, config_driver
 
 
@@ -13,14 +13,15 @@ class DouBan:
     def __init__(self, username):
         self.driver = config_driver()
         self.username = str(username)
-        config_log(self.username)
-        load_cookies(self.driver, self.username)
-        self.posts = posts.get(self.username)
+        self.name = 'douban_' + self.username
+        config_log(self.name)
+        load_cookies(self.driver, self.name)
+        self.posts = douban['posts'].get(self.username)
         self.up_posts()
 
     def request(self, url):
         logging.info('requesting %s', url)
-        request(self.driver, url, self.username)
+        request(self.driver, url, self.name)
 
     def up_posts(self):
         len_posts = len(self.posts)
@@ -28,10 +29,10 @@ class DouBan:
             url = self.posts[index % len_posts]
             if self.up_post(url) is False:
                 continue
-            time.sleep(3 * 60)
+            time.sleep(5 * 60)
 
     def up_post(self, url):
-        identify_url = 'http://39.107.86.245:5001/'
+        identify_url = 'http://localhost:5001/'
         self.request(url)
         self.driver.find_element_by_class_name('comment_textarea').send_keys(str(uuid4()))
         time.sleep(5)
