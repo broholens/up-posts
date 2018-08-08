@@ -28,15 +28,16 @@ class DouBan:
             url = self.posts[index % len_posts]
             if self.up_post(url) is False:
                 continue
-            time.sleep(10 * 60)
+            time.sleep(3 * 60)
 
     def up_post(self, url):
+        identify_url = 'http://39.107.86.245:5001/'
         self.request(url)
         self.driver.find_element_by_class_name('comment_textarea').send_keys(str(uuid4()))
         time.sleep(5)
         try:
             img_url = self.driver.find_element_by_id('captcha_image').get_attribute('src')
-            resp = requests.post('http://39.107.86.245:5001/', data={'img_url': img_url})
+            resp = requests.post(identify_url, data={'img_url': img_url})
             word = resp.json().get('word')
             while 1:
                 logging.info('word %s    img_url: %s', word, img_url)
@@ -46,7 +47,7 @@ class DouBan:
                 logging.info('refresh %s', url)
                 time.sleep(61)
                 img_url = self.driver.find_element_by_id('captcha_image').get_attribute('src')
-                word = requests.post('http://39.107.86.245:5001/', data={'img_url': img_url}).text
+                word = requests.post(identify_url, data={'img_url': img_url}).json().get('word')
 
             captcha = self.driver.find_element_by_id('captcha_field')
             captcha.clear()
