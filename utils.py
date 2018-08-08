@@ -3,6 +3,7 @@ import time
 import logging
 import requests
 from selenium import webdriver
+from config import email
 
 
 def save_cookies(driver, username):
@@ -65,11 +66,31 @@ def config_driver(headless=True):
 
 
 def send_mail(content):
-    mail_uri = 'http://39.107.86.245:5000'
+    mail_uri = 'http://localhost:5000'
     mail = {
-        'recipient': 'zzwcng@126.com',
+        'recipient': email,
         'subject': 'HuPu',
         'content': content
     }
     requests.post(mail_uri, mail)
+
+
+class CookieGetter:
+    """login and save cookie to json file"""
+    def __init__(self, name, username, passwd):
+        self.driver = config_driver(headless=False)
+        self.username = str(username)
+        self.name = name + '_' + self.username
+        config_log(self.name)
+        self.passwd = str(passwd)
+        self.save_cookies()
+
+    def login(self):
+        pass
+
+    def save_cookies(self):
+        self.login()
+        save_cookies(self.driver, self.name)
+        print('cookies saved!')
+        self.driver.quit()
 
